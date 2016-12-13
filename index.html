@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+
+<!-- Begin CSS -->
+
+<script type="text/javascript" src="https://api-maps.yandex.ru/2.1/?lang=en_US"></script>
+<script src="http://yastatic.net/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://kashey.ru/maps/regions.js?4"></script>
+<style>
+        body, html {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #map {
+            width: 100%;
+            height: 90%;
+        }
+
+
+</style>
+
+<!-- Terminate CSS -->
+
+</head>
+
+<body>
+
+
+<!-- Begin Javascript -->
+
+<script>
+
+var myMap;
+
+
+
+ymaps.ready(init);
+
+function init () {
+    var datatable = document.getElementById('table').innerHTML.split('\n');
+    var dataset = {};
+    for(var i=0;i<datatable.length;++i){
+      var line = datatable[i].split(',');
+      var iso = line[0].split('-');
+      if(!dataset[iso[0]]){
+        dataset[iso[0]]={};
+      }
+      if(!dataset[iso[0]][iso[1]]){
+        dataset[iso[0]][iso[1]]=line[1];
+      }
+    }
+    myMap = new ymaps.Map('map', {
+        center: [48, 17],
+        zoom: 5
+    });
+
+    var geoMap=myMap,
+        collection=0;
+
+    for(var country in dataset){
+        (function(country){
+        osmeRegions.geoJSON(country, {
+            lang: 'en',
+        }, function (data, pure) {
+        collection = osmeRegions.toYandex(data, ymaps);
+        collection.setStyles(function (object) {
+        console.log(object);
+        var isocode = object.properties.properties.iso3166 || '';
+        var code = isocode.split('-')[1];
+        return ({
+        // set opacity based on "number"
+           opacity: ((dataset[country][code]||0)/60)
+        });
+    });
+        collection.add(geoMap);
+        });
+        })(country);
+        }
+}
+
+</script>
+
+<!-- End Javascript -->
+
+
+<!-- Begin Data/HTML -->
+
+<div id="map"></div>
+
+<div id='table'>
+RO-B, 9
+PL-MZ, 24
+SE-C, 3
+DE-NI, 5
+PL-DS, 14
+ES-CM, 11
+RO-IS, 2
+DE-BY, 51
+SE-Z, 18
+CH-BE, 10
+PL-WP, 1
+ES-IB, 1
+DE-BW, 21
+DE-BE, 24
+DE-BB, 1
+IE-M, 26
+ES-PV, 1
+DE-SN, 6
+CH-ZH, 31
+ES-GA, 1
+NL-GE, 2
+IE-U, 1
+ES-AN, 4
+FR-J, 82
+DE-HH, 34
+PL-PD, 1
+PL-LD, 6
+GB-WLS, 60
+GB-ENG, 8619
+RO-BV, 45
+CH-VD, 2
+PL-SL, 1
+DE-HE, 17
+SE-I, 1
+HU-PE, 4
+PL-MA, 4
+SE-AB, 3
+CH-BS, 20
+ES-CT, 31
+DE-TH, 25
+IE-C, 1
+CZ-ST, 1
+DE-NW, 29
+NL-NH, 3
+DE-RP, 9
+CZ-PR, 4
+IE-L, 134
+HU-BU, 10
+RO-CJ, 1
+GB-NIR, 29
+ES-MD, 33
+CH-LU, 11
+GB-SCT, 172
+CH-GE, 3
+BE-BRU, 30
+BE-VLG, 25
+</div>
+
+<!-- Terminate Data/HTML -->
+
+</body>
+</html>
